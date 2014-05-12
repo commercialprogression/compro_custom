@@ -1,0 +1,123 @@
+<?php
+
+/**
+ * @file
+ * Custom module to perform misc tasks.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function compro_custom_menu() {
+  $items['blank'] = array(
+    'title' => 'Home',
+    'description' => 'A blank page to hold front page blocks',
+    'page callback' => 'compro_custom_blank_page',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Menu callback function.
+ */
+function compro_custom_blank_page() {
+  $site_name = variable_get('site_name', 'Home');
+  drupal_set_title($site_name);
+  return ' ';
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function compro_custom_block_info() {
+  return array(
+    'compro_custom_copyright' => array(
+      'info' => t('Copyright Notice'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function compro_custom_block_view($delta = '') {
+  $block = array('subject' => NULL, 'content' => NULL);
+
+  switch ($delta) {
+    case 'compro_custom_copyright':
+      $block['content'] = '&copy; ' . date('Y') . ' ' . variable_get('site_name') .
+          ', ' . t('All Rights Reserved.');
+
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Override the blockify standard logo block
+ */
+function theme_compro_custom_logo($variables) {
+  $site_name = filter_xss_admin(variable_get('site_name', 'Drupal'));
+
+  // Strip the base_path from the beginning of the logo path.
+  $path = preg_replace('|^' . base_path() . '|', '', $variables['logo_path']);
+
+  $image = array(
+    '#theme' => 'image',
+    '#path' => $path,
+    '#alt' => t('!site_name logo', array(
+      '!site_name' => $site_name,
+    ))
+  );
+
+  $h_open = '';
+  $h_close = '';
+  if (isset($variables['is_h']) && $variables['is_h']) {
+    $h_open = '<h1 id="site-name">';
+    $h_close = '</h1>';
+  }
+  return $h_open . l(render($image), '<front>', array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('logo'),
+          'id' => 'logo',
+          'rel' => 'home',
+          'title' => t('!site_name Home', array(
+            '!site_name' => $site_name,
+          )),
+        ),
+      )) . $h_close;
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function compro_custom_theme_registry_alter(&$theme_registry) {
+  $theme_registry['blockify_logo']['function'] = 'theme_compro_custom_logo';
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function compro_custom_entity_info_alter(&$entity_info) {
+  // Nodes.
+  $entity_info['node']['view modes']['grid'] = array(
+    'label' => t('Grid'),
+    'custom settings' => TRUE,
+  );
+  $entity_info['node']['view modes']['slide'] = array(
+    'label' => t('Slide'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function compro_custom_preprocess_node(&$vars) {
+  $vars['theme_hook_suggestions'][] = 'node__' . $vars['view_mode'];
+  $vars['theme_hook_suggestions'][] = 'node__' . $vars['type'] . '__' . $vars['view_mode'];
+}
