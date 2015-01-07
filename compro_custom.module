@@ -121,3 +121,87 @@ function compro_custom_preprocess_node(&$vars) {
   $vars['theme_hook_suggestions'][] = 'node__' . $vars['view_mode'];
   $vars['theme_hook_suggestions'][] = 'node__' . $vars['type'] . '__' . $vars['view_mode'];
 }
+
+/**
+ * Implement hook_field_formatter_info().
+ */
+function compro_custom_field_formatter_info() {
+  return array(
+    'compro_custom_file_link' => array(
+      'label' => t('Link'),
+      'field types' => array('file'),
+      'settings' => array(
+        'compro_custom_link_title' => '',
+        'compro_custom_link_class' => '',
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function compro_custom_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  if ($instance['display']['default']['type'] == 'compro_custom_file_link') {
+    $display = $instance['display'][$view_mode];
+    $settings = $display['settings'];
+
+    $element = array();
+
+    $element['compro_custom_link_title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Link title'),
+      '#description' => t('Enter an optional link title to be shown instead of file name'),
+      '#default_value' => $settings['compro_custom_link_title'],
+    );
+
+    $element['compro_custom_link_class'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Class'),
+      '#description' => t('Enter an optional class to be applied to the link'),
+      '#default_value' => $settings['compro_custom_link_class'],
+    );
+
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function compro_custom_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  if ($instance['display']['default']['type'] == 'compro_custom_file_link') {
+    $summary = t('Displays a title link');
+  }
+
+  return $summary;
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function compro_custom_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  $settings = $display['settings'];
+
+  if ($instance['display']['default']['type'] == 'compro_custom_file_link') {
+    // Loop through items
+    foreach ($items as $delta => $item) {
+      $element[$delta] = array(
+        '#theme' => 'link',
+        '#text' => $settings['compro_custom_link_title'] ? $settings['compro_custom_link_title'] : $item['filename'],
+        '#path' => file_create_url($item['uri']),
+        '#options' => array(
+          'attributes' => array('class' => array($settings['compro_custom_link_class'] ? $settings['compro_custom_link_class'] : '')),
+          'html' => FALSE,
+        ),
+      );
+    }
+
+  }
+
+  return $element;
+}
