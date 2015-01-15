@@ -16,6 +16,13 @@ function compro_custom_menu() {
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
+  $items['admin/config/system/compro-custom'] = array(
+    'title' => 'Compro Custom',
+    'file' => 'compro_custom.admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('compro_custom_admin'),
+    'access arguments' => array('access administration pages'),
+  );
   return $items;
 }
 
@@ -26,6 +33,19 @@ function compro_custom_blank_page() {
   $site_name = variable_get('site_name', 'Home');
   drupal_set_title($site_name);
   return ' ';
+}
+
+/**
+ * Implements hook_page_build().
+ */
+function compro_custom_page_build(&$page) {
+  // Conditionally add CSS, based on admin screen.
+  $compro_custom = variable_get('compro_custom', '');
+  if (isset($compro_custom['icon_enable']) && $compro_custom['icon_enable']) {
+    drupal_add_css(drupal_get_path('module', 'compro_custom') . '/icons/compro_custom.css', array(
+      'every_page' => TRUE,
+    ));
+  }
 }
 
 /**
