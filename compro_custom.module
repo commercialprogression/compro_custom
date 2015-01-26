@@ -56,6 +56,9 @@ function compro_custom_block_info() {
     'compro_custom_copyright' => array(
       'info' => t('Copyright Notice'),
     ),
+    'social_share' => array(
+      'info' => t('Social share'),
+    ),
   );
 }
 
@@ -71,6 +74,39 @@ function compro_custom_block_view($delta = '') {
           ', ' . t('All Rights Reserved.');
 
       break;
+    case 'social_share':
+      global $base_url;
+      $page_url = $base_url . '/' . request_path();
+      $page_title = drupal_get_title();
+      $block['subject'] = t('Share this');
+      $block['content'] = '<div class="social">' . 
+        l(
+          t('Facebook'), 'https://www.facebook.com/sharer/sharer.php', array(
+            'query' => array(
+              'u' => $page_url,
+            ),
+          )
+        ) .
+        l(
+          t('Twitter'),
+          'https://twitter.com/intent/tweet', array(
+            'query' => array(
+              'url' => $page_url,
+              'text' => $page_title,
+            ),
+          )
+        ) .
+        l(
+          t('LinkedIn'),
+          'http://www.linkedin.com/shareArticle', array(
+            'query' => array(
+              'url' => $page_url,
+              'title' => $page_title,
+            ),
+          )
+        ) .
+        '</div>';
+        break;
   }
 
   return $block;
