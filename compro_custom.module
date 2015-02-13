@@ -9,13 +9,6 @@
  * Implements hook_menu().
  */
 function compro_custom_menu() {
-  $items['blank'] = array(
-    'title' => 'Home',
-    'description' => 'A blank page to hold front page blocks',
-    'page callback' => 'compro_custom_blank_page',
-    'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK,
-  );
   $items['admin/config/system/compro-custom'] = array(
     'title' => 'Compro Custom',
     'file' => 'compro_custom.admin.inc',
@@ -24,15 +17,6 @@ function compro_custom_menu() {
     'access arguments' => array('access administration pages'),
   );
   return $items;
-}
-
-/**
- * Menu callback function.
- */
-function compro_custom_blank_page() {
-  $site_name = variable_get('site_name', 'Home');
-  drupal_set_title($site_name);
-  return ' ';
 }
 
 /**
