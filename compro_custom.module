@@ -16,6 +16,20 @@ function compro_custom_menu() {
     'page arguments' => array('compro_custom_admin'),
     'access arguments' => array('access administration pages'),
   );
+  $items['admin/structure/types/submitted'] = array(
+    'title' => 'Submitted lines',
+    'file' => 'compro_custom.admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('compro_custom_submitted'),
+    'access arguments' => array('administer content types'),
+  );
+  $items['admin/structure/types/author'] = array(
+    'title' => 'Author',
+    'file' => 'compro_custom.admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('compro_custom_author'),
+    'access arguments' => array('administer content types'),
+  );
   return $items;
 }
 
@@ -26,9 +40,16 @@ function compro_custom_page_build(&$page) {
   // Conditionally add CSS, based on admin screen.
   $compro_custom = variable_get('compro_custom', '');
   if (isset($compro_custom['icon_enable']) && $compro_custom['icon_enable']) {
-    drupal_add_css(drupal_get_path('module', 'compro_custom') . '/icons/compro_custom.css', array(
-      'every_page' => TRUE,
-    ));
+    if (isset($compro_custom['icon_neg']) && $compro_custom['icon_neg']) {
+      drupal_add_css(drupal_get_path('module', 'compro_custom') . '/icons/compro_custom_neg.css', array(
+        'every_page' => TRUE,
+      ));
+    }
+    else {
+      drupal_add_css(drupal_get_path('module', 'compro_custom') . '/icons/compro_custom.css', array(
+        'every_page' => TRUE,
+      ));
+    }
   }
 }
 
@@ -37,7 +58,7 @@ function compro_custom_page_build(&$page) {
  */
 function compro_custom_block_info() {
   return array(
-    'compro_custom_copyright' => array(
+    'copyright' => array(
       'info' => t('Copyright Notice'),
     ),
     'social_share' => array(
@@ -53,7 +74,7 @@ function compro_custom_block_view($delta = '') {
   $block = array('subject' => NULL, 'content' => NULL);
 
   switch ($delta) {
-    case 'compro_custom_copyright':
+    case 'copyright':
       $block['content'] = '&copy; ' . date('Y') . ' ' . variable_get('site_name') .
           ', ' . t('All Rights Reserved.');
 
@@ -105,31 +126,34 @@ function theme_compro_custom_logo($variables) {
   // Strip the base_path from the beginning of the logo path.
   $path = preg_replace('|^' . base_path() . '|', '', $variables['logo_path']);
 
+  // Link path.
+  $compro_custom = variable_get('compro_custom', '');
+  $link_path = isset($compro_custom['logo']['url']) ? $compro_custom['logo']['url'] : '<front>';
+  
   $image = array(
     '#theme' => 'image',
     '#path' => $path,
-    '#alt' => t('!site_name logo', array(
+    '#alt' => t('!site_name', array(
       '!site_name' => $site_name,
-    ))
+    )),
   );
 
   $h_open = '';
   $h_close = '';
-  if (isset($variables['is_h']) && $variables['is_h']) {
+  $is_h = isset($compro_custom['logo']['heading']) ? $compro_custom['logo']['heading'] : 1;
+  if ($is_h) {
     $h_open = '<h1 id="site-name">';
     $h_close = '</h1>';
   }
-  return $h_open . l(render($image), '<front>', array(
-        'html' => TRUE,
-        'attributes' => array(
-          'class' => array('logo'),
-          'id' => 'logo',
-          'rel' => 'home',
-          'title' => t('!site_name Home', array(
-            '!site_name' => $site_name,
-          )),
-        ),
-      )) . $h_close;
+  return $h_open . l(render($image), $link_path, array(
+    'html' => TRUE,
+    'attributes' => array(
+      'class' => array('logo'),
+      'id' => 'logo',
+      'rel' => 'home',
+      'title' => check_plain(isset($compro_custom['logo']['title']) ? $compro_custom['logo']['title'] : $site_name . ' home'),
+    ),
+  )) . $h_close;
 }
 
 /**
@@ -143,15 +167,20 @@ function compro_custom_theme_registry_alter(&$theme_registry) {
  * Implements hook_entity_info_alter().
  */
 function compro_custom_entity_info_alter(&$entity_info) {
-  // Nodes.
-  $entity_info['node']['view modes']['grid'] = array(
-    'label' => t('Grid'),
-    'custom settings' => TRUE,
-  );
-  $entity_info['node']['view modes']['slide'] = array(
-    'label' => t('Slide'),
-    'custom settings' => TRUE,
-  );
+  // The view modes we want to add to all entities.
+  $modes = array('teaser', 'small');
+  
+  // Add views modes for all types.
+  foreach ($entity_info as $key => $value) {
+    foreach ($modes as $mode) {
+      if (!isset($entity_info[$key]['view modes'][$mode])) {
+        $entity_info[$key]['view modes'][$mode] = array(
+          'label' => t('@mode', array('@mode' => ucwords($mode))),
+          'custom settings' => TRUE,
+        );
+      }
+    }
+  }
 }
 
 /**
@@ -244,4 +273,102 @@ function compro_custom_field_formatter_view($entity_type, $entity, $field, $inst
   }
 
   return $element;
+}
+
+/**
+ * Implements hook_field_extra_fields().
+ */
+function compro_custom_field_extra_fields() {
+  $entity_info = entity_get_info();
+  $extra = array();
+  
+  // Go through all the entity types and add extra fields for display.
+  foreach ($entity_info as $type => $info) {
+    if ($type == 'node') {
+      foreach ($info['bundles'] as $bundle => $bundle_info) {
+        $extra[$type][$bundle] = array(
+          'display' => array(
+            'compro_author' => array(
+              'label' => t('Author photo'),
+              'description' => t('A photo of the author.'),
+              'weight' => 0,
+            ),
+            'compro_submitted' => array(
+              'label' => t('Submitted'),
+              'description' => t('Author attribution for the content.'),
+              'weight' => 0,
+            ),
+            'compro_links' => array(
+              'label' => t('Links'),
+              'description' => t('Node links, like "Read more".'),
+              'weight' => 0,
+            ),
+          ),
+          'form' => array(
+            'compro_author' => array(
+              'label' => t('Author'),
+              'description' => t('A photo of the author.'),
+              'edit' => l('Edit', 'admin/structure/types/author'),
+              'weight' => 0,
+            ),
+            'compro_submitted' => array(
+              'label' => t('Submitted'),
+              'description' => t('Author attribution for the content.'),
+              'edit' => l('Edit', 'admin/structure/types/submitted'),
+              'weight' => 0,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  return $extra;
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function compro_custom_node_view($node, $view_mode, $langcode) {
+  $extra = field_extra_fields_get_display('node', $node->type, $view_mode);
+  $au = 'compro_author';
+  $su = 'compro_submitted';
+  $li = 'compro_links';
+
+  if (isset($extra[$su]) && isset($extra[$su]['visible']) && $extra[$su]['visible']) {
+    $sub = variable_get('compro_submitted', '');
+    $sub_line = 'Submitted by [node:author:name] on [node:created]';
+    if (isset($sub[$node->type])) {
+      $sub_line = $sub[$node->type];
+    }
+    $node->content[$su] = array(
+      '#prefix' => '<div class="submitted">',
+      '#markup' => token_replace($sub_line, array('node' => $node)), 
+      '#suffix' => '</div>',
+    );
+  }
+  
+  if (isset($extra[$li]) && isset($extra[$li]['visible']) && $extra[$li]['visible']) {
+    $node->content[$li] = $node->content['links'];
+  }
+  
+  if (isset($extra[$au]) && isset($extra[$au]['visible']) && $extra[$au]['visible']) {
+    $aut = variable_get('compro_author', '');
+    $style = (isset($aut[$node->type][$view_mode])) ? $aut[$node->type][$view_mode] : 'thumbnail';
+    $author = user_load($node->uid);
+    if (isset($author->field_photo[LANGUAGE_NONE][0]['uri'])) {
+      $path = $author->field_photo['und'][0]['uri'];
+      $image = theme('image_style', array(
+        'style_name' => $style,
+        'path' => $path,
+      ));
+      $node->content[$au] = array(
+        '#prefix' => '<div class="user-picture">',
+        '#markup' => l($image, 'user/' . $node->uid, array(
+          'html' => TRUE,
+        )),
+        '#suffix' => '</div>',
+      );
+    }    
+  }
 }

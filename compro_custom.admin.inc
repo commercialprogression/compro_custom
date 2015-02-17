@@ -11,13 +11,50 @@
 function compro_custom_admin($form, &$form_state) {
   // Load module vars
   $compro_custom = variable_get('compro_custom', '');
+  $site_name = filter_xss_admin(variable_get('site_name', 'Drupal'));
 
   // Make form a tree.
   $form['#tree'] = TRUE;
 
+  // Logo settings for theme override.
+  $form['compro_custom']['logo'] = array(
+    '#title' => 'Top Logo',
+    '#type' => 'fieldset',
+    'heading' => array(
+      '#type' => 'checkbox',
+      '#title' => t('Logo wrapped in h1'),
+      '#description' => t('Should the header logo be the top heading on the site?'),
+      '#default_value' => isset($compro_custom['logo']['heading']) ? $compro_custom['logo']['heading'] : 1,
+    ),
+    'title' => array(
+      '#type' => 'textfield',
+      '#title' => t('Title text'),
+      '#maxlength' => 255,
+      '#default_value' => isset($compro_custom['logo']['title']) ? $compro_custom['logo']['title'] : $site_name . ' home',
+      '#description' => t('What the tooltip should say when you hover on the logo.'),
+    ),
+    'url' => array(
+      '#type' => 'textfield',
+      '#title' => t('Link path'),
+      '#maxlength' => 255,
+      '#default_value' => isset($compro_custom['logo']['url']) ? $compro_custom['logo']['url'] : '<front>',
+      '#description' => t('The path the logo should link to. This can be an internal Drupal path such as %add-node or an external URL such as %drupal. Enter %front to link to the front page.', array(
+        '%front' => '<front>',
+        '%add-node' => 'node/add',
+        '%drupal' => 'http://drupal.org'
+      )),
+    ),
+  );
+
   $form['compro_custom']['icon_enable'] = array(
     '#default_value' => isset($compro_custom['icon_enable']) ? $compro_custom['icon_enable'] : 1,
-    '#title' => t('Include icon font and CSS on all pages.'),
+    '#title' => t('Include icon font and CSS on all pages'),
+    '#type' => 'checkbox',
+  );
+  $form['compro_custom']['icon_neg'] = array(
+    '#default_value' => isset($compro_custom['icon_neg']) ? $compro_custom['icon_neg'] : 0,
+    '#title' => t('Include "negative" version'),
+    '#description' => t('Negative version changes icon color instead of background color.'),
     '#type' => 'checkbox',
   );
 
@@ -46,7 +83,73 @@ function compro_custom_admin($form, &$form_state) {
   $form['icon_demo']['social']['table'] = array(
     '#markup' => _compro_custom_social_table(),
   );
-  
+
+  return system_settings_form($form);
+}
+
+/**
+ * Form for editing author (photo) per content type.
+ */
+function compro_custom_author($form, &$form_state) {
+  $aut = variable_get('compro_author', '');
+  $content_types = entity_get_info('node');
+  $styles = image_styles();
+  $options = array();
+  foreach ($styles as $key => $value) {
+    $options[$key] = $value['label'];
+  }
+
+  // Make form a tree.
+  $form['#tree'] = TRUE;
+
+  foreach ($content_types['bundles'] as $type => $info) {
+    $form['compro_author'][$type] = array(
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#type' => 'fieldset',
+      '#title' => t('Author photo settings for @type', array('@type' => $info['label'])),
+    );
+    foreach ($content_types['view modes'] as $mach => $view_info) {
+      $form['compro_author'][$type][$mach] = array(
+        '#title' => t('Image style from @mode', array('@mode' => $view_info['label'])),
+        '#type' => 'select',
+        '#default_value' => (isset($aut[$type][$mach])) ? $aut[$type][$mach] : 'thumbnail',
+        '#options' => $options,
+      );
+    }
+  }
+
+  return system_settings_form($form);
+}
+
+/**
+ * Form for editing submitted lines per content type.
+ */
+function compro_custom_submitted($form, &$form_state) {
+  $sub = variable_get('compro_submitted', '');
+  $content_types = entity_get_info('node');
+
+  // Make form a tree.
+  $form['#tree'] = TRUE;
+
+  // Show tokens available for a node.
+  $form['tokens'] = array(
+    '#markup' => theme('token_tree', array(
+      'token_types' => array(
+        token_get_entity_mapping('entity', 'node'),
+      ),
+      'dialog' => TRUE,
+    )),
+  );
+
+  foreach ($content_types['bundles'] as $type => $info) {
+    $form['compro_submitted'][$type] = array(
+      '#type' => 'textarea',
+      '#default_value' => isset($sub[$type]) ? $sub[$type] : 'Submitted by [node:author:name] on [node:created]',
+      '#title' => t('Submitted for @type', array('@type' => $type)),
+    );
+  }
+
   return system_settings_form($form);
 }
 
@@ -172,7 +275,7 @@ function _compro_custom_icon_table() {
     'rows' => array(),
     'sticky' => TRUE,
   );
-  
+
   // Get each row.
   foreach (_compro_custom_icon_classes() as $class => $data) {
     $variables['rows'][] = array(
@@ -182,7 +285,7 @@ function _compro_custom_icon_table() {
       $data['unicode'],
     );
   }
-  
+
   return theme('table', $variables);
 }
 
@@ -224,7 +327,7 @@ function _compro_custom_social_table() {
     'rows' => array(),
     'sticky' => TRUE,
   );
-  
+
   // Special rows.
   $variables['rows'][] = array(
     'external link',
@@ -244,7 +347,7 @@ function _compro_custom_social_table() {
     '<code>&lt;a href="mailto:name@example.com"&gt;email me&lt;/a&gt;</code>',
     '\2709',
   );
-  
+
   // Get each row.
   foreach (_compro_custom_social_icons() as $fragment => $data) {
     $variables['rows'][] = array(
@@ -254,6 +357,6 @@ function _compro_custom_social_table() {
       $data['unicode'],
     );
   }
-  
+
   return theme('table', $variables);
 }
