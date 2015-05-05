@@ -14,7 +14,7 @@ function compro_custom_menu() {
     'file' => 'compro_custom.admin.inc',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('compro_custom_admin'),
-    'access arguments' => array('access administration pages'),
+    'access arguments' => array('administer site configuration'),
   );
   $items['admin/structure/types/submitted'] = array(
     'title' => 'Submitted lines',
