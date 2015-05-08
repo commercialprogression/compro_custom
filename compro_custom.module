@@ -16,18 +16,11 @@ function compro_custom_menu() {
     'page arguments' => array('compro_custom_admin'),
     'access arguments' => array('administer site configuration'),
   );
-  $items['admin/structure/types/submitted'] = array(
+  $items['admin/config/system/compro-custom/submitted'] = array(
     'title' => 'Submitted lines',
     'file' => 'compro_custom.admin.inc',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('compro_custom_submitted'),
-    'access arguments' => array('administer content types'),
-  );
-  $items['admin/structure/types/author'] = array(
-    'title' => 'Author',
-    'file' => 'compro_custom.admin.inc',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('compro_custom_author'),
     'access arguments' => array('administer content types'),
   );
   return $items;
@@ -288,11 +281,6 @@ function compro_custom_field_extra_fields() {
       foreach ($info['bundles'] as $bundle => $bundle_info) {
         $extra[$type][$bundle] = array(
           'display' => array(
-            'compro_author' => array(
-              'label' => t('Author photo'),
-              'description' => t('A photo of the author.'),
-              'weight' => 0,
-            ),
             'compro_submitted' => array(
               'label' => t('Submitted'),
               'description' => t('Author attribution for the content.'),
@@ -305,16 +293,10 @@ function compro_custom_field_extra_fields() {
             ),
           ),
           'form' => array(
-            'compro_author' => array(
-              'label' => t('Author'),
-              'description' => t('A photo of the author.'),
-              'edit' => l('Edit', 'admin/structure/types/author'),
-              'weight' => 0,
-            ),
             'compro_submitted' => array(
               'label' => t('Submitted'),
               'description' => t('Author attribution for the content.'),
-              'edit' => l('Edit', 'admin/structure/types/submitted'),
+              'edit' => l('Edit', 'admin/config/system/compro-custom/submitted'),
               'weight' => 0,
             ),
           ),
@@ -331,7 +313,6 @@ function compro_custom_field_extra_fields() {
  */
 function compro_custom_node_view($node, $view_mode, $langcode) {
   $extra = field_extra_fields_get_display('node', $node->type, $view_mode);
-  $au = 'compro_author';
   $su = 'compro_submitted';
   $li = 'compro_links';
 
@@ -350,25 +331,5 @@ function compro_custom_node_view($node, $view_mode, $langcode) {
   
   if (isset($extra[$li]) && isset($extra[$li]['visible']) && $extra[$li]['visible']) {
     $node->content[$li] = $node->content['links'];
-  }
-  
-  if (isset($extra[$au]) && isset($extra[$au]['visible']) && $extra[$au]['visible']) {
-    $aut = variable_get('compro_author', '');
-    $style = (isset($aut[$node->type][$view_mode])) ? $aut[$node->type][$view_mode] : 'thumbnail';
-    $author = user_load($node->uid);
-    if (isset($author->field_photo[LANGUAGE_NONE][0]['uri'])) {
-      $path = $author->field_photo['und'][0]['uri'];
-      $image = theme('image_style', array(
-        'style_name' => $style,
-        'path' => $path,
-      ));
-      $node->content[$au] = array(
-        '#prefix' => '<div class="user-picture">',
-        '#markup' => l($image, 'user/' . $node->uid, array(
-          'html' => TRUE,
-        )),
-        '#suffix' => '</div>',
-      );
-    }    
   }
 }
