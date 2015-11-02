@@ -3,3 +3,10 @@
 /**
  * Install file for misc updates
  */
+
+/**
+ * Implements hook_install().
+ */
+function compro_custom_install() {
+  compro_custom_add_view_modes();
+}

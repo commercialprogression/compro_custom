@@ -1,0 +1,15 @@
+compro_custom.compro_custom:
+  path: '/admin/config/system/compro-custom'
+  defaults:
+    _form: 'Drupal\compro_custom\Form\ComproCustomAdminForm'
+    _title: 'Compro Custom'
+  requirements:
+    _permission: 'administer site configuration'
+
+compro_custom.compro_custom_submitted:
+  path: '/admin/config/system/compro-custom/submitted'
+  defaults:
+    _form: 'Drupal\compro_custom\Form\ComproCustomSubmittedForm'
+    _title: 'Submitted lines'
+  requirements:
+    _permission: 'administer content types'

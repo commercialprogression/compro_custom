@@ -1,0 +1,11 @@
+icons:
+  version: 1.x
+  css:
+    theme:
+      icons/compro_custom.css: {}
+
+neg_icons:
+  version: 1.x
+  css:
+    theme:
+      icons/compro_custom_neg.css: {}

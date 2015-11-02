@@ -1,4 +1,0 @@
-name = Compro Custom
-description = Site-specific tweaks
-core = 7.x
-dependencies[] = blockify

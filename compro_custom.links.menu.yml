@@ -1,0 +1,11 @@
+compro_custom.compro_custom:
+  title: 'Compro Custom'
+  parent: system.admin_config_development
+  route_name: compro_custom.compro_custom
+  weight: 10
+
+compro_custom.compro_custom_submitted:
+  title: 'Submitted lines'
+  parent: compro_custom.compro_custom
+  route_name: compro_custom.compro_custom_submitted
+  weight: 10

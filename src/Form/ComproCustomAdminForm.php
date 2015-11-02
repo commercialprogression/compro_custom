@@ -1,156 +1,135 @@
 <?php
-
 /**
  * @file
- * Administration callbacks for the module.
+ * Contains \Drupal\compro_custom\Form\ComproCustomForm.
  */
+
+namespace Drupal\compro_custom\Form;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Component\Utility\Xss;
 
 /**
- * Menu callback function for compro_custom administration.
+ * Configure custom settings for this site.
  */
-function compro_custom_admin($form, &$form_state) {
-  // Load module vars
-  $compro_custom = variable_get('compro_custom', '');
-  $site_name = filter_xss_admin(variable_get('site_name', 'Drupal'));
+class ComproCustomAdminForm extends ConfigFormBase {
 
-  // Make form a tree.
-  $form['#tree'] = TRUE;
-
-  // Logo settings for theme override.
-  $form['compro_custom']['logo'] = array(
-    '#title' => 'Top Logo',
-    '#type' => 'fieldset',
-    'heading' => array(
-      '#type' => 'checkbox',
-      '#title' => t('Logo wrapped in h1'),
-      '#description' => t('Should the header logo be the top heading on the site?'),
-      '#default_value' => isset($compro_custom['logo']['heading']) ? $compro_custom['logo']['heading'] : 1,
-    ),
-    'title' => array(
-      '#type' => 'textfield',
-      '#title' => t('Title text'),
-      '#maxlength' => 255,
-      '#default_value' => isset($compro_custom['logo']['title']) ? $compro_custom['logo']['title'] : $site_name . ' home',
-      '#description' => t('What the tooltip should say when you hover on the logo.'),
-    ),
-    'url' => array(
-      '#type' => 'textfield',
-      '#title' => t('Link path'),
-      '#maxlength' => 255,
-      '#default_value' => isset($compro_custom['logo']['url']) ? $compro_custom['logo']['url'] : '<front>',
-      '#description' => t('The path the logo should link to. This can be an internal Drupal path such as %add-node or an external URL such as %drupal. Enter %front to link to the front page.', array(
-        '%front' => '<front>',
-        '%add-node' => 'node/add',
-        '%drupal' => 'http://drupal.org'
-      )),
-    ),
-  );
-
-  $form['compro_custom']['icon_enable'] = array(
-    '#default_value' => isset($compro_custom['icon_enable']) ? $compro_custom['icon_enable'] : 1,
-    '#title' => t('Include icon font and CSS on all pages'),
-    '#type' => 'checkbox',
-  );
-  $form['compro_custom']['icon_neg'] = array(
-    '#default_value' => isset($compro_custom['icon_neg']) ? $compro_custom['icon_neg'] : 0,
-    '#title' => t('Include "negative" version'),
-    '#description' => t('Negative version changes icon color instead of background color.'),
-    '#type' => 'checkbox',
-  );
-
-  // Demo icons and CSS.
-  $form['#attached']['css'] = array(
-    drupal_get_path('module', 'compro_custom') . '/icons/compro_custom.css',
-  );
-  $form['icon_demo'] = array(
-    '#type' => 'container',
-  );
-  $form['icon_demo']['icons'] = array(
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#type' => 'fieldset',
-    '#title' => t('Available icons'),
-  );
-  $form['icon_demo']['icons']['table'] = array(
-    '#markup' => _compro_custom_icon_table(),
-  );
-  $form['icon_demo']['social'] = array(
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#type' => 'fieldset',
-    '#title' => t('Available social links'),
-  );
-  $form['icon_demo']['social']['table'] = array(
-    '#markup' => _compro_custom_social_table(),
-  );
-
-  return system_settings_form($form);
-}
-
-/**
- * Form for editing author (photo) per content type.
- */
-function compro_custom_author($form, &$form_state) {
-  $aut = variable_get('compro_author', '');
-  $content_types = entity_get_info('node');
-  $styles = image_styles();
-  $options = array();
-  foreach ($styles as $key => $value) {
-    $options[$key] = $value['label'];
+  /**
+   * Constructs a new ComproCustomForm.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
+   */
+  public function __construct(ConfigFactoryInterface $config_factory) {
+    parent::__construct($config_factory);
   }
 
-  // Make form a tree.
-  $form['#tree'] = TRUE;
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return 'compro_custom_admin_form';
+  }
 
-  foreach ($content_types['bundles'] as $type => $info) {
-    $form['compro_author'][$type] = array(
-      '#collapsible' => TRUE,
-      '#collapsed' => TRUE,
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
+    return ['compro_custom.form'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $compro_custom = $this->config('compro_custom.form');
+    $site_name = Xss::filterAdmin($this->config('system.site')->get('name'));
+    // Load module vars
+
+    // Make form a tree.
+    $form['#tree'] = TRUE;
+
+    // Logo settings for theme override.
+    $form['compro_custom']['logo'] = array(
+      '#title' => 'Top Logo',
       '#type' => 'fieldset',
-      '#title' => t('Author photo settings for @type', array('@type' => $info['label'])),
-    );
-    foreach ($content_types['view modes'] as $mach => $view_info) {
-      $form['compro_author'][$type][$mach] = array(
-        '#title' => t('Image style from @mode', array('@mode' => $view_info['label'])),
-        '#type' => 'select',
-        '#default_value' => (isset($aut[$type][$mach])) ? $aut[$type][$mach] : 'thumbnail',
-        '#options' => $options,
-      );
-    }
-  }
-
-  return system_settings_form($form);
-}
-
-/**
- * Form for editing submitted lines per content type.
- */
-function compro_custom_submitted($form, &$form_state) {
-  $sub = variable_get('compro_submitted', '');
-  $content_types = entity_get_info('node');
-
-  // Make form a tree.
-  $form['#tree'] = TRUE;
-
-  // Show tokens available for a node.
-  $form['tokens'] = array(
-    '#markup' => theme('token_tree', array(
-      'token_types' => array(
-        token_get_entity_mapping('entity', 'node'),
+      'heading' => array(
+        '#type' => 'checkbox',
+        '#title' => t('Logo wrapped in h1'),
+        '#description' => t('Should the header logo be the top heading on the site?'),
+        '#default_value' => $compro_custom->get('logo.heading') !== NULL ? $compro_custom->get('logo.heading') : 1,
       ),
-      'dialog' => TRUE,
-    )),
-  );
-
-  foreach ($content_types['bundles'] as $type => $info) {
-    $form['compro_submitted'][$type] = array(
-      '#type' => 'textarea',
-      '#default_value' => isset($sub[$type]) ? $sub[$type] : 'Submitted by [node:author:name] on [node:created]',
-      '#title' => t('Submitted for @type', array('@type' => $type)),
+      'title' => array(
+        '#type' => 'textfield',
+        '#title' => t('Title text'),
+        '#maxlength' => 255,
+        '#default_value' => $compro_custom->get('logo.title') !== NULL ? $compro_custom->get('logo.title') : $site_name . ' home',
+        '#description' => t('What the tooltip should say when you hover on the logo.'),
+      ),
+      'url' => array(
+        '#type' => 'textfield',
+        '#title' => t('Link path'),
+        '#maxlength' => 255,
+        '#default_value' => $compro_custom->get('logo.url') !== NULL ? $compro_custom->get('logo.url') : '<front>',
+        '#description' => t('The path the logo should link to. This can be an internal Drupal path such as %add-node or an external URL such as %drupal. Enter %front to link to the front page.', array(
+          '%front' => '<front>',
+          '%add-node' => 'node/add',
+          '%drupal' => 'http://drupal.org'
+        )),
+      ),
     );
+
+    $form['compro_custom']['icon_enable'] = array(
+      '#default_value' => $compro_custom->get('icon_enable') !== NULL ? $compro_custom->get('icon_enable') : 1,
+      '#title' => t('Include icon font and CSS on all pages'),
+      '#type' => 'checkbox',
+    );
+    $form['compro_custom']['icon_neg'] = array(
+      '#default_value' => $compro_custom->get('icon_neg') !== NULL ? $compro_custom->get('icon_neg') : 0,
+      '#title' => t('Include "negative" version'),
+      '#description' => t('Negative version changes icon color instead of background color.'),
+      '#type' => 'checkbox',
+    );
+
+    // Demo icons and CSS.
+    $form['#attached']['library'][] = 'compro_custom/icons';
+
+    $form['icon_demo'] = array(
+      '#type' => 'container',
+    );
+    $form['icon_demo']['icons'] = array(
+      '#open' => FALSE,
+      '#type' => 'details',
+      '#title' => t('Available icons'),
+    );
+    $form['icon_demo']['icons']['table'] = _compro_custom_icon_table();
+
+    $form['icon_demo']['social'] = array(
+      '#open' => FALSE,
+      '#type' => 'details',
+      '#title' => t('Available social links'),
+    );
+    $form['icon_demo']['social']['table'] = _compro_custom_social_table();
+
+    return parent::buildForm($form, $form_state);
   }
 
-  return system_settings_form($form);
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $this->config('compro_custom.form')
+      ->set('logo.heading', $form_state->getValue(array('compro_custom', 'logo', 'heading')))
+      ->set('logo.title', $form_state->getValue(array('compro_custom', 'logo', 'title')))
+      ->set('logo.url', $form_state->getValue(array('compro_custom', 'logo', 'url')))
+      ->set('icon_enable', $form_state->getValue(array('compro_custom', 'icon_enable')))
+      ->set('icon_neg', $form_state->getValue(array('compro_custom', 'icon_neg')))
+      ->save();
+    parent::submitForm($form, $form_state);
+  }
+
 }
 
 /**
@@ -265,28 +244,29 @@ function _compro_custom_icon_classes() {
  * Helper to theme a table showing icons, markup, and unicode.
  */
 function _compro_custom_icon_table() {
-  $variables = array(
-    'header' => array(
+  $table = array(
+    '#type' => 'table',
+    '#header' => array(
       t('Class'),
       t('Icon'),
       t('Markup'),
       t('Unicode'),
     ),
-    'rows' => array(),
-    'sticky' => TRUE,
+    '#sticky' => TRUE,
   );
 
   // Get each row.
   foreach (_compro_custom_icon_classes() as $class => $data) {
-    $variables['rows'][] = array(
-      check_plain($class),
-      '<span class="icon ' . check_plain($class) . '"></span>',
-      '<code>&lt;span class="icon ' . check_plain($class) . '"&gt;&lt;/span&gt;</code>',
-      $data['unicode'],
+    $safe = Html::escape($class);
+    $table[] = array(
+      'safe' => array('#markup' => $safe),
+      'span' => array('#markup' => '<span class="icon ' . $safe . '"></span>'),
+      'code' => array('#markup' => '<code>&lt;span class="icon ' . $safe . '"&gt;&lt;/span&gt;</code>'),
+      'data' => array('#markup' => $data['unicode']),
     );
   }
 
-  return theme('table', $variables);
+  return $table;
 }
 
 /**
@@ -314,49 +294,49 @@ function _compro_custom_social_icons() {
  * Helper to make social demos.
  */
 function _compro_custom_social_table() {
-  $variables = array(
-    'attributes' => array(
+  $table = array(
+    '#type' => 'table',
+    '#attributes' => array(
       'class' => array('social'),
     ),
-    'header' => array(
+    '#header' => array(
       t('Service'),
       t('Example'),
       t('Markup (in .social container)'),
       t('Unicode'),
     ),
-    'rows' => array(),
-    'sticky' => TRUE,
+    '#sticky' => TRUE,
   );
 
   // Special rows.
-  $variables['rows'][] = array(
-    'external link',
-    '<a href="http://example.com">example</a>',
-    '<code>&lt;a href="http://example.com"&gt;example&lt;/a&gt;</code>',
-    '\1f517',
+  $table[] = array(
+    'service' => array('#markup' => 'external link'),
+    'example' => array('#markup' => '<a href="http://example.com">example</a>'),
+    'markup' => array('#markup' => '<code>&lt;a href="http://example.com"&gt;example&lt;/a&gt;</code>'),
+    'unicode' => array('#markup' => '\1f517'),
   );
-  $variables['rows'][] = array(
-    'rss',
-    '<a href="/rss">rss</a>',
-    '<code>&lt;a href="http://example.com/rss"&gt;rss&lt;/a&gt;</code>',
-    '\2a9c',
+  $table[] = array(
+    'service' => array('#markup' => 'rss'),
+    'example' => array('#markup' => '<a href="/rss">rss</a>'),
+    'markup' => array('#markup' => '<code>&lt;a href="http://example.com/rss"&gt;rss&lt;/a&gt;</code>'),
+    'unicode' => array('#markup' => '\2a9c'),
   );
-  $variables['rows'][] = array(
-    'email',
-    '<a href="mailto:brad@commercialprogression.com">Email me</a>',
-    '<code>&lt;a href="mailto:name@example.com"&gt;email me&lt;/a&gt;</code>',
-    '\2709',
+  $table[] = array(
+    'service' => array('#markup' => 'email'),
+    'example' => array('#markup' => '<a href="mailto:brad@commercialprogression.com">Email me</a>'),
+    'markup' => array('#markup' => '<code>&lt;a href="mailto:name@example.com"&gt;email me&lt;/a&gt;</code>'),
+    'unicode' => array('#markup' => '\2709'),
   );
 
   // Get each row.
   foreach (_compro_custom_social_icons() as $fragment => $data) {
-    $variables['rows'][] = array(
-      $fragment,
-      '<a href="http://www.' . $fragment . '.com">' . $fragment . '</a>',
-      '<code>&lt;a href="http://www.' . $fragment . '.com"&gt;' . $fragment . '&lt;/a&gt;</code>',
-      $data['unicode'],
+    $table[] = array(
+      'service' => array('#markup' => $fragment),
+      'example' => array('#markup' => '<a href="http://www.' . $fragment . '.com">' . $fragment . '</a>'),
+      'markup' => array('#markup' => '<code>&lt;a href="http://www.' . $fragment . '.com"&gt;' . $fragment . '&lt;/a&gt;</code>'),
+      'unicode' => array('#markup' => $data['unicode']),
     );
   }
 
-  return theme('table', $variables);
+  return $table;
 }
