@@ -1,0 +1,29 @@
+{% extends "block.html.twig" %}
+{#
+/**
+ * @file
+ * Compro Custom's theme implementation for a branding block.
+ *
+ * Each branding element variable (logo, name, slogan) is only available if
+ * enabled in the block configuration.
+ *
+ * Available variables:
+ * - site_logo: Logo for site as defined in Appearance or theme settings.
+ * - title_h1: Checkbox indicating whether to wrap logo in h1 tag
+ * - logo_path: Path set in Compro Custom settings for logo
+ * - logo_title: Title set for alt and title tags of logo
+ */
+#}
+{% block content %}
+    {% if site_logo %}
+        {% if title_h1 %}
+            <h1 id="site-name">
+        {% endif %}
+        <a href="{{ path(logo_path) }}" title="{{ logo_title|t }}" rel="home" id="logo" class="logo">
+            <img src="{{ site_logo }}" alt="{{ logo_title|t }}" />
+        </a>
+        {% if title_h1 %}
+            </h1>
+        {% endif %}
+    {% endif %}
+{% endblock %}

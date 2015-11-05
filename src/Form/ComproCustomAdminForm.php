@@ -17,7 +17,7 @@ use Drupal\Component\Utility\Xss;
 class ComproCustomAdminForm extends ConfigFormBase {
 
   /**
-   * Constructs a new ComproCustomForm.
+   * Constructor for ComproCustomForm.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.

@@ -29,50 +29,34 @@ function compro_custom_page_attachments(array &$attachments) {
 }
 
 /**
- * Override the blockify standard logo block
+ * Implements hook_theme_registry_alter().
+ *
+ * In order to modify the core logo block, we have to trick Drupal into thinking
+ * that Compro Custom is a theme
  */
-function theme_compro_custom_logo() {
-  $site_name = Xss::filterAdmin(\Drupal::config('system.site')->get('name'));
-  $config = \Drupal::config('blockify.logo_path'); //TODO update this when blockify gets with the times
-
-  // Strip the base_path from the beginning of the logo path.
-  $path = preg_replace('|^' . base_path() . '|', '', $config->get('logo_path'));
-
-  // Link path.
-  $compro_custom = \Drupal::config('compro_custom.form');
-  $link_path = $compro_custom->get('logo.url') !== NULL ? $compro_custom->get('logo.url') : '<front>';
-
-  $image = array(
-    '#theme' => 'image',
-    '#path' => $path,
-    '#alt' => t('!site_name', array(
-      '!site_name' => $site_name,
-    )),
-  );
-
-  $h_open = '';
-  $h_close = '';
-  $is_h = $compro_custom->get('logo.heading') !== NULL ? $compro_custom->get('logo.heading') : 1;
-  if ($is_h) {
-    $h_open = '<h1 id="site-name">';
-    $h_close = '</h1>';
+function compro_custom_theme_registry_alter(&$theme_registry) {
+  if (isset($theme_registry['block__system_branding_block'])) {
+    $theme_registry['block__system_branding_block']['path'] = 'modules/custom/compro_custom/templates';
+    $theme_registry['block__system_branding_block']['theme path'] = 'modules/custom/compro_custom';
   }
-  return $h_open . \Drupal::l(render($image), Url::fromRoute($link_path, array(), array(
-    'html' => TRUE,
-    'attributes' => array(
-      'class' => array('logo'),
-      'id' => 'logo',
-      'rel' => 'home',
-      'title' => Html::escape($compro_custom->get('logo.title') !== NULL ? $compro_custom->get('logo.title') : $site_name . ' home'),
-    ),
-  ))) . $h_close;
 }
 
 /**
- * Implements hook_theme_registry_alter().
+ * Implements hook_preprocess_HOOK().
+ *
+ * Pass some more variables into our template file
  */
-function compro_custom_theme_registry_alter(&$theme_registry) {
-  $theme_registry['blockify_logo']['function'] = 'theme_compro_custom_logo';
+function compro_custom_preprocess_block(&$variables) {
+  if ($variables['plugin_id'] == 'system_branding_block') {
+    $site_name = Xss::filterAdmin(\Drupal::config('system.site')->get('name'));
+
+    // Link path.
+    $compro_custom = \Drupal::config('compro_custom.form');
+
+    $variables['title_h1'] = $compro_custom->get('logo.heading') !== NULL ? $compro_custom->get('logo.heading') : 1;
+    $variables['logo_path'] = $compro_custom->get('logo.url') !== NULL ? $compro_custom->get('logo.url') : '<front>';
+    $variables['logo_title'] = Html::escape($compro_custom->get('logo.title') !== NULL ? $compro_custom->get('logo.title') : $site_name . ' home');
+  }
 }
 
 /**
