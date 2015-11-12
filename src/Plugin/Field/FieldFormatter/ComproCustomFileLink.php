@@ -4,6 +4,7 @@ namespace Drupal\compro_custom\Plugin\Field\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 
 /**
  * Plugin implementation of the 'compro_custom_file_link' formatter
@@ -25,30 +26,30 @@ class ComproCustomFileLink extends FormatterBase {
     return array(
       'compro_custom_link_title' => '',
       'compro_custom_link_class' => '',
-    );
+    ) + parent::defaultSettings();
   }
 
   /**
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
-    $elements = array();
+    $form = parent::settingsForm($form, $form_state);
 
-    $elements['compro_custom_link_title'] = array(
+    $form['compro_custom_link_title'] = array(
       '#type' => 'textfield',
       '#title' => t('Link title'),
       '#description' => t('Enter an optional link title to be shown instead of file name'),
       '#default_value' => $this->getSetting('compro_custom_link_title'),
     );
 
-    $elements['compro_custom_link_class'] = array(
+    $form['compro_custom_link_class'] = array(
       '#type' => 'textfield',
       '#title' => t('Class'),
       '#description' => t('Enter an optional class to be applied to the link'),
       '#default_value' => $this->getSetting('compro_custom_link_class'),
     );
 
-    return $elements;
+    return $form;
   }
 
   /**
@@ -67,18 +68,22 @@ class ComproCustomFileLink extends FormatterBase {
     $elements = array();
 
     // Loop through items
-    foreach ($items as $delta => $item) {
-      if ($this->getPluginId() == 'compro_custom_file_link') {
-        $elements[$delta] = array(
-          '#theme' => 'link',
-          '#text' => $this->getSetting('compro_custom_link_title') ? $this->getSetting('compro_custom_link_title') : $item['filename'],
-          '#path' => file_create_url($item['uri']),
-          '#options' => array(
-            'attributes' => array('class' => array($this->getSetting('compro_custom_link_class') ? $this->getSetting('compro_custom_link_class') : '')),
-            'html' => FALSE,
+    foreach ($items as $delta => $file) {
+      $file = $file->entity;
+      $url = Url::fromUri($file->url(),
+        array(
+          'attributes' => array(
+            'class' => array(
+              $this->getSetting('compro_custom_link_class') !== NULL ? $this->getSetting('compro_custom_link_class') : '',
+            ),
           ),
-        );
-      }
+        )
+      );
+      $file_link = \Drupal::l($this->getSetting('compro_custom_link_title') !== NULL ?
+        $this->getSetting('compro_custom_link_title') : $file->getFileName(), $url);
+      $elements[$delta] = array(
+        '#markup' => $file_link,
+      );
     }
 
     return $elements;
