@@ -5,6 +5,7 @@
  * Custom module to perform misc tasks.
  */
 
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -67,14 +68,14 @@ function compro_custom_preprocess_block(&$variables) {
 function compro_custom_add_view_modes() {
   $modes = array('teaser', 'small');
   // Create view modes for each entity type.
-  $info = \Drupal::entityManager()->getDefinitions();
+  $info = \Drupal::entityTypeManager()->getDefinitions();
   foreach ($info as $entity_type => $entity_type_info) {
     // We're only interested in entity types with a view builder.
     if (!$entity_type_info->getViewBuilderClass()) {
       continue;
     }
     // Try to find a token view mode for that entity type.
-    $storage = \Drupal::entityManager()->getStorage('entity_view_mode');
+    $storage = \Drupal::entityTypeManager()->getStorage('entity_view_mode');
     // Add view mode if it does not already exist.
     foreach ($modes as $mode) {
       if (!$storage->load("$entity_type.$mode")) {
@@ -121,7 +122,7 @@ function compro_custom_entity_extra_field_info() {
         'compro_submitted' => array(
           'label' => t('Submitted'),
           'description' => t('Author attribution for the content.'),
-          'edit' => \Drupal::l('Edit', Url::fromRoute('compro_custom.compro_custom_submitted')),
+          'edit' => Link::fromTextAndUrl('Edit', Url::fromRoute('compro_custom.compro_custom_submitted'))->toString(),
           'weight' => 0,
         ),
       ),
