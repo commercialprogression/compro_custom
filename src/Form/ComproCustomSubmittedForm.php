@@ -1,10 +1,12 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\compro_custom\Form\ComproCustomForm.
  */
 
 namespace Drupal\compro_custom\Form;
+
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
@@ -55,7 +57,7 @@ class ComproCustomSubmittedForm extends ConfigFormBase {
         '#token_types' => array(
           token_get_entity_mapping('entity', 'node'),
         ),
-        //      '#dialog' => TRUE, // Commenting out until token fixes a jQuery bug
+        // '#dialog' => TRUE, // Commenting out until token fixes a jQuery bug.
       );
     }
 
@@ -74,7 +76,7 @@ class ComproCustomSubmittedForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    foreach ($form_state->getValue('compro_submitted') as $key=>$value) {
+    foreach ($form_state->getValue('compro_submitted') as $key => $value) {
       $this->config('compro_custom.compro_submitted')->set($key, $value);
     }
 

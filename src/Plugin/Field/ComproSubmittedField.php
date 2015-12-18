@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * @file
+ * Contains \Drupal\compro_custom\Plugin\Field\ComproSubmittedField.
+ */
+
 namespace Drupal\compro_custom\Plugin\Field\ComproSubmittedField;
 
 use Drupal\Core\Field\FieldItemBase;
@@ -17,13 +23,6 @@ use Drupal\Core\TypedData\DataDefinition;
  * )
  */
 class ComproSubmittedField extends FieldItemBase {
-
-  /**
-   * Definitions of the contained properties.
-   *
-   * @var array
-   */
-  static $propertyDefinitions;
 
   /**
    * {@inheritdoc}

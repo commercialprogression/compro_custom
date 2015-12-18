@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * @file
+ */
 namespace Drupal\compro_custom\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldItemListInterface;
@@ -8,7 +12,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 
 /**
- * Plugin implementation of the 'compro_custom_file_link' formatter
+ * Plugin implementation of the 'compro_custom_file_link' formatter.
  *
  * @FieldFormatter(
  *   id = "compro_custom_file_link",
@@ -68,7 +72,7 @@ class ComproCustomFileLink extends FormatterBase {
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = array();
 
-    // Loop through items
+    // Loop through items.
     foreach ($items as $delta => $file) {
       $file = $file->entity;
       $url = Url::fromUri($file->url(),
@@ -87,4 +91,5 @@ class ComproCustomFileLink extends FormatterBase {
 
     return $elements;
   }
+
 }

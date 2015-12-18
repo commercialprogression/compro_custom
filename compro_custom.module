@@ -19,7 +19,7 @@ use Drupal\node\Entity\NodeType;
 function compro_custom_page_attachments(array &$attachments) {
   // Conditionally add CSS, based on admin screen.
   $compro_custom = \Drupal::config('compro_custom.form');
-  if ( $compro_custom->get('icon_enable')) {
+  if ($compro_custom->get('icon_enable')) {
     if ($compro_custom->get('icon_neg')) {
       $attachments['#attached']['library'][] = 'compro_custom/neg_icons';
     }
@@ -33,7 +33,7 @@ function compro_custom_page_attachments(array &$attachments) {
  * Implements hook_theme_registry_alter().
  *
  * In order to modify the core logo block, we have to trick Drupal into thinking
- * that Compro Custom is a theme
+ * that Compro Custom is a theme.
  */
 function compro_custom_theme_registry_alter(&$theme_registry) {
   if (isset($theme_registry['block__system_branding_block'])) {
@@ -45,7 +45,7 @@ function compro_custom_theme_registry_alter(&$theme_registry) {
 /**
  * Implements hook_preprocess_HOOK().
  *
- * Pass some more variables into our template file
+ * Pass some more variables into our template file.
  */
 function compro_custom_preprocess_block(&$variables) {
   if ($variables['plugin_id'] == 'system_branding_block') {
@@ -61,7 +61,9 @@ function compro_custom_preprocess_block(&$variables) {
 }
 
 /**
- * This is how tokens adds new view modes during install. Implementing hook_entity_type_alter()
+ * This is how tokens adds new view modes during install.
+ *
+ * Implementing hook_entity_type_alter()
  * will throw an error, so it seems the best way to implement this
  * is during install, and when new entity types are created.
  */
@@ -122,7 +124,8 @@ function compro_custom_entity_extra_field_info() {
         'compro_submitted' => array(
           'label' => t('Submitted'),
           'description' => t('Author attribution for the content.'),
-          'edit' => Link::fromTextAndUrl('Edit', Url::fromRoute('compro_custom.compro_custom_submitted'))->toString(),
+          'edit' => Link::fromTextAndUrl('Edit', Url::fromRoute('compro_custom.compro_custom_submitted'))
+            ->toString(),
           'weight' => 0,
         ),
       ),
@@ -144,7 +147,8 @@ function compro_custom_node_view(array &$build, EntityInterface $entity, EntityV
     }
     $build['compro_submitted'] = [
       '#prefix' => '<div class="submitted">',
-      '#markup' => \Drupal::token()->replace($sub_line, array('node' => $entity)),
+      '#markup' => \Drupal::token()
+        ->replace($sub_line, array('node' => $entity)),
       '#suffix' => '</div>',
     ];
   }

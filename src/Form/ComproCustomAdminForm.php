@@ -1,10 +1,12 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\compro_custom\Form\ComproCustomForm.
  */
 
 namespace Drupal\compro_custom\Form;
+
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -46,8 +48,7 @@ class ComproCustomAdminForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $compro_custom = $this->config('compro_custom.form');
     $site_name = Xss::filterAdmin($this->config('system.site')->get('name'));
-    // Load module vars
-
+    // Load module vars.
     // Make form a tree.
     $form['#tree'] = TRUE;
 
@@ -76,7 +77,7 @@ class ComproCustomAdminForm extends ConfigFormBase {
         '#description' => t('The path the logo should link to. This can be an internal Drupal path such as %add-node or an external URL such as %drupal. Enter %front to link to the front page.', array(
           '%front' => '<front>',
           '%add-node' => 'node/add',
-          '%drupal' => 'http://drupal.org'
+          '%drupal' => 'http://drupal.org',
         )),
       ),
     );
@@ -121,11 +122,29 @@ class ComproCustomAdminForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('compro_custom.form')
-      ->set('logo.heading', $form_state->getValue(array('compro_custom', 'logo', 'heading')))
-      ->set('logo.title', $form_state->getValue(array('compro_custom', 'logo', 'title')))
-      ->set('logo.url', $form_state->getValue(array('compro_custom', 'logo', 'url')))
-      ->set('icon_enable', $form_state->getValue(array('compro_custom', 'icon_enable')))
-      ->set('icon_neg', $form_state->getValue(array('compro_custom', 'icon_neg')))
+      ->set('logo.heading', $form_state->getValue(array(
+        'compro_custom',
+        'logo',
+        'heading',
+      )))
+      ->set('logo.title', $form_state->getValue(array(
+        'compro_custom',
+        'logo',
+        'title',
+      )))
+      ->set('logo.url', $form_state->getValue(array(
+        'compro_custom',
+        'logo',
+        'url',
+      )))
+      ->set('icon_enable', $form_state->getValue(array(
+        'compro_custom',
+        'icon_enable',
+      )))
+      ->set('icon_neg', $form_state->getValue(array(
+        'compro_custom',
+        'icon_neg',
+      )))
       ->save();
     parent::submitForm($form, $form_state);
   }
