@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\compro_custom\Form\ComproCustomForm.
+ * Contains \Drupal\compro_custom\Form\ComproCustomSubmittedForm.
  */
 
 namespace Drupal\compro_custom\Form;

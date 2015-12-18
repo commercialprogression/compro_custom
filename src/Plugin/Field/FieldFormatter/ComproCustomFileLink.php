@@ -2,7 +2,9 @@
 
 /**
  * @file
+ * Contains \Drupal\compro_custom\Plugin\Field\FieldFormatter\ComproCustomFileLink.
  */
+
 namespace Drupal\compro_custom\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldItemListInterface;
