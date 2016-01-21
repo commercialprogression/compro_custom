@@ -204,7 +204,7 @@ function compro_custom_field_formatter_info() {
  * Implements hook_field_formatter_settings_form().
  */
 function compro_custom_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
-  if ($instance['display']['default']['type'] == 'compro_custom_file_link') {
+  if (isset($instance['display']['default']['type']) && $instance['display']['default']['type'] == 'compro_custom_file_link') {
     $display = $instance['display'][$view_mode];
     $settings = $display['settings'];
 
@@ -224,9 +224,8 @@ function compro_custom_field_formatter_settings_form($field, $instance, $view_mo
       '#default_value' => $settings['compro_custom_link_class'],
     );
 
+    return $element;
   }
-
-  return $element;
 }
 
 /**
