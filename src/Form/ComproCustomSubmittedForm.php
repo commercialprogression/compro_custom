@@ -10,6 +10,7 @@ namespace Drupal\compro_custom\Form;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
+use Drupal\node\Entity\NodeType;
 
 /**
  * Configure custom settings for this site.
@@ -45,20 +46,15 @@ class ComproCustomSubmittedForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $sub = $this->config('compro_custom.compro_submitted');
-    $content_types = \Drupal::entityManager()->getBundleInfo('node');
+    $content_types = NodeType::loadMultiple();
 
     // Make form a tree.
     $form['#tree'] = TRUE;
 
     // Show tokens available for a node.
     if (\Drupal::moduleHandler()->moduleExists('token')) {
-      $form['tokens'] = array(
-        '#theme' => 'token_tree',
-        '#token_types' => array(
-          token_get_entity_mapping('entity', 'node'),
-        ),
-        // '#dialog' => TRUE, // Commenting out until token fixes a jQuery bug.
-      );
+      $form['tokens'] =
+        \Drupal::service('token.tree_builder')->buildRenderable(array('entity', 'node'));
     }
 
     foreach ($content_types as $type => $info) {
@@ -76,11 +72,12 @@ class ComproCustomSubmittedForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $config = $this->config('compro_custom.compro_submitted');
     foreach ($form_state->getValue('compro_submitted') as $key => $value) {
-      $this->config('compro_custom.compro_submitted')->set($key, $value);
+      $config->set($key, $value);
     }
 
-    $this->config('compro_custom.compro_submitted')->save();
+    $config->save();
     parent::submitForm($form, $form_state);
   }
 
