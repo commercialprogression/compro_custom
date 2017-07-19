@@ -74,11 +74,13 @@ class ComproCustomAdminForm extends ConfigFormBase {
         '#title' => t('Link path'),
         '#maxlength' => 255,
         '#default_value' => $compro_custom->get('logo.url') !== NULL ? $compro_custom->get('logo.url') : '<front>',
-        '#description' => t('The path the logo should link to. This can be an internal Drupal path such as %add-node or an external URL such as %drupal. Enter %front to link to the front page.', array(
-          '%front' => '<front>',
-          '%add-node' => 'node/add',
-          '%drupal' => 'http://drupal.org',
-        )),
+        '#description' => t(
+          'The path the logo should link to. This can be an internal Drupal path such as %add-node or an external URL such as %drupal. Enter %front to link to the front page.', array(
+            '%front' => '<front>',
+            '%add-node' => 'node/add',
+            '%drupal' => 'http://drupal.org',
+          )
+        ),
       ),
     );
 
@@ -126,26 +128,21 @@ class ComproCustomAdminForm extends ConfigFormBase {
         'compro_custom',
         'logo',
         'heading',
-      )))
-      ->set('logo.title', $form_state->getValue(array(
+      )))->set('logo.title', $form_state->getValue(array(
         'compro_custom',
         'logo',
         'title',
-      )))
-      ->set('logo.url', $form_state->getValue(array(
+      )))->set('logo.url', $form_state->getValue(array(
         'compro_custom',
         'logo',
         'url',
-      )))
-      ->set('icon_enable', $form_state->getValue(array(
+      )))->set('icon_enable', $form_state->getValue(array(
         'compro_custom',
         'icon_enable',
-      )))
-      ->set('icon_neg', $form_state->getValue(array(
+      )))->set('icon_neg', $form_state->getValue(array(
         'compro_custom',
         'icon_neg',
-      )))
-      ->save();
+      )))->save();
     parent::submitForm($form, $form_state);
   }
 

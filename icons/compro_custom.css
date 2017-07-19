@@ -13,309 +13,410 @@
 
 .icon {
 }
+
 .icon:before {
   content: ' ';
   display: inline-block;
   font-family: 'fontello';
   min-width: 1em;
 }
+
 .icon.airplane:before {
   content: '\2708';
 }
+
 .icon.amazon:before {
   content: '\1e01';
 }
+
 .icon.android:before {
   content: '\1f4e0';
 }
+
 .icon.apple:before {
   content: '\1f34e';
 }
+
 .icon.arrow-down:before {
   content: '\2193';
 }
+
 .icon.arrow-left:before {
   content: '\2190';
 }
+
 .icon.arrow-right:before {
   content: '\2192';
 }
+
 .icon.arrow-up:before {
   content: '\2191';
 }
+
 .icon.basket:before {
   content: '\1f6cd';
 }
+
 .icon.bell:before {
   content: '\1f514';
 }
+
 .icon.bitbucket:before {
   content: '\1f5d1';
 }
+
 .icon.bitcoin:before {
   content: '\e3f';
 }
+
 .icon.book-cover:before {
   content: '\1f4d5';
 }
+
 .icon.camera:before {
   content: '\1f4f7';
 }
+
 .icon.cc-amex:before {
   content: '\24e7';
 }
+
 .icon.cc-discover:before {
   content: '\24d3';
 }
+
 .icon.cc-mastercard:before {
   content: '\24dc';
 }
+
 .icon.cc-paypal:before {
   content: '\24df';
 }
+
 .icon.cc-stripe:before {
   content: '\24e2';
 }
+
 .icon.cc-visa:before {
   content: '\24e5';
 }
+
 .icon.chat-balloon:before {
   content: '\1f4ac';
 }
+
 .icon.checkmark:before {
   content: '\2713';
 }
+
 .icon.delicious:before {
   content: '\1f67e';
 }
+
 .icon.direction:before {
   content: '\21d7';
 }
+
 .icon.dropbox:before {
   content: '\237d';
 }
+
 .icon.drupal-drop:before {
   content: '\1f4a7';
 }
+
 .icon.ebay:before {
   content: '\6fb3';
 }
+
 .icon.envelope:before {
   content: '\2709';
 }
+
 .icon.facebook:before {
   content: '\192';
 }
+
 .icon.favorites:before {
   content: '\1f516';
 }
+
 .icon.fax:before {
   content: '\260e';
 }
+
 .icon.file-audio:before {
   content: '\3609';
 }
+
 .icon.file-code:before {
   content: '\4e5a';
 }
+
 .icon.file-excel:before {
   content: '\67f5';
 }
+
 .icon.file-image:before {
   content: '\753b';
 }
+
 .icon.file-pdf:before {
   content: '\6ce5';
 }
+
 .icon.file-plain:before {
   content: '\1f5ce';
 }
+
 .icon.file-powerpoint:before {
   content: '\8a00';
 }
+
 .icon.file-video:before {
   content: '\3979';
 }
+
 .icon.file-word:before {
   content: '\5b57';
 }
+
 .icon.file-zip:before {
   content: '\64c1';
 }
+
 .icon.flag:before {
   content: '\2691';
 }
+
 .icon.flickr:before {
   content: '\2824';
 }
+
 .icon.folder:before {
   content: '\1f4c1';
 }
+
 .icon.gear:before {
   content: '\2699';
 }
+
 .icon.ghostbusters:before {
   content: '\20e0';
 }
+
 .icon.github:before {
   content: '\1f419';
 }
+
 .icon.globe:before {
   content: '\1f30e';
 }
+
 .icon.google:before {
   content: '\261';
 }
+
 .icon.gwallet:before {
   content: '\24e6';
 }
+
 .icon.hacker-news:before {
   content: '\232';
 }
+
 .icon.hamburger:before {
   content: '\2261';
 }
+
 .icon.heart:before {
   content: '\2764';
 }
+
 .icon.house:before {
   content: '\2302';
 }
+
 .icon.html5:before {
   content: '\2684';
 }
+
 .icon.instagramm:before {
   content: '\1f4f8';
 }
+
 .icon.itinerary:before {
   content: '\1f4c5';
 }
+
 .icon.link-ext:before {
   content: '\1f517';
 }
+
 .icon.linkedin:before {
   content: '\1f13b';
 }
+
 .icon.location:before {
   content: '\2316';
 }
+
 .icon.magnifying-glass-minus:before {
   content: '\2beb';
 }
+
 .icon.magnifying-glass-plus:before {
   content: '\2bea';
 }
+
 .icon.magnifying-glass:before {
   content: '\1f50d';
 }
+
 .icon.meetup:before {
   content: '\2133';
 }
+
 .icon.microphone:before {
   content: '\1f3a4';
 }
+
 .icon.move-handle:before {
   content: '\1f542';
 }
+
 .icon.padlock-open:before {
   content: '\1f513';
 }
+
 .icon.padlock:before {
   content: '\1f512';
 }
+
 .icon.paperclip:before {
   content: '\1f4ce';
 }
+
 .icon.picture:before {
   content: '\1f533';
 }
+
 .icon.pin:before {
   content: '\22a4';
 }
+
 .icon.pinterest:before {
   content: '\2118';
 }
+
 .icon.price-tag:before {
   content: '\3868';
 }
+
 .icon.printer:before {
   content: '\1f5b6';
 }
+
 .icon.recycle:before {
   content: '\2672';
 }
+
 .icon.reddit:before {
   content: '\1f47d';
 }
+
 .icon.rss-symbol:before {
   content: '\2a9c';
 }
+
 .icon.share-symbol:before {
   content: '\5171';
 }
+
 .icon.silhouette:before {
   content: '\1f464';
 }
+
 .icon.skype:before {
   content: '\24c8';
 }
+
 .icon.slideshare:before {
   content: '\2b13';
 }
+
 .icon.spinner-double:before {
   content: '\21bb';
 }
+
 .icon.stackoverflow:before {
   content: '\1d363';
 }
+
 .icon.star:before {
   content: '\2605';
 }
+
 .icon.stumbleupon:before {
   content: '\1515';
 }
+
 .icon.telephone:before {
   content: '\1f4de';
 }
+
 .icon.thumbs-up:before {
   content: '\1f44d';
 }
+
 .icon.ticket:before {
   content: '\1f3ab';
 }
+
 .icon.trash:before {
   content: '\5783';
 }
+
 .icon.tree-leaf:before {
   content: '\1f342';
 }
+
 .icon.tumblr:before {
   content: '\1d69d';
 }
+
 .icon.twitter:before {
   content: '\1f426';
 }
+
 .icon.video-play:before {
   content: '\1f39e';
 }
+
 .icon.vimeo:before {
   content: '\24b1';
 }
+
 .icon.vine:before {
   content: '\2c71';
 }
+
 .icon.wheelchair:before {
   content: '\267f';
 }
+
 .icon.wikipedia:before {
   content: '\174';
 }
+
 .icon.yahoo:before {
   content: '\24e';
 }
+
 .icon.yelp:before {
   content: '\2837';
 }
+
 .icon.youtube:before {
   content: '\6898';
 }
@@ -323,12 +424,14 @@
 /* Social icons */
 .social {
 }
+
 .social a[href] {
   color: transparent;
   display: inline-block;
   font-size: 0px;
   font-style: normal;
 }
+
 .social a[href]:before {
   background-color: #888;
   color: #fff;
@@ -340,94 +443,124 @@
   min-width: 1em;
   padding: 5px;
 }
+
 .social a[href]:hover:before {
   background-color: #111;
   color: #fff;
 }
+
 .social a[href^="mailto:"]:before {
   content: '\2709';
 }
+
 .social a[href*="delicious.com"]:before {
   content: '\1f67e';
 }
+
 .social a[href*="delicious.com"]:hover:before {
   background-color: #31a9ff;
 }
+
 .social a[href*="facebook.com"]:before {
   content: '\192';
 }
+
 .social a[href*="facebook.com"]:hover:before {
   background-color: #3b5998;
 }
+
 .social a[href*="flickr.com"]:before {
   content: '\2824';
 }
+
 .social a[href*="flickr.com"]:hover:before {
   background-color: #ff0084;
 }
+
 .social a[href*="github.com"]:before {
   content: '\1f419';
 }
+
 .social a[href*="github.com"]:hover:before {
   background-color: #333;
 }
+
 .social a[href*="google.com"]:before {
   content: '\261';
 }
+
 .social a[href*="google.com"]:hover:before {
   background-color: #dd4b39;
 }
+
 .social a[href*="instagram.com"]:before {
   content: '\1f4f8';
 }
+
 .social a[href*="instagram.com"]:hover:before {
   background-color: #3f729b;
 }
+
 .social a[href*="linkedin.com"]:before {
   content: '\1f13b';
 }
+
 .social a[href*="linkedin.com"]:hover:before {
-  background-color: 1007bb6;
+  background-color: 1007 bb6;
 }
+
 .social a[href*="meetup.com"]:before {
   content: '\2133';
 }
+
 .social a[href*="meetup.com"]:hover:before {
   background-color: #e0393e;
 }
+
 .social a[href*="pinterest.com"]:before {
   content: '\2118';
 }
+
 .social a[href*="pinterest.com"]:hover:before {
   background-color: #cb2027;
 }
+
 .social a[href*="reddit.com"]:before {
   content: '\1f47d';
 }
+
 .social a[href*="reddit.com"]:hover:before {
   background-color: orangered;
 }
+
 .social a[href*="rss"]:before {
   content: '\2a9c';
 }
+
 .social a[href*="rss"]:hover:before {
   background-color: #ee802f;
 }
+
 .social a[href*="twitter.com"]:before {
   content: '\1f426';
 }
+
 .social a[href*="twitter.com"]:hover:before {
-  background-color: 100aced;
+  background-color: 100 aced;
 }
+
 .social a[href*="vimeo.com"]:before {
   content: '\24b1';
 }
+
 .social a[href*="vimeo.com"]:hover:before {
   background-color: #aad450;
 }
+
 .social a[href*="youtube.com"]:before {
   content: '\6898';
 }
+
 .social a[href*="youtube.com"]:hover:before {
   background-color: #b00;
 }

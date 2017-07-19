@@ -1,11 +1,11 @@
 <?php
 
+namespace Drupal\compro_custom\Form;
+
 /**
  * @file
  * Contains \Drupal\compro_custom\Form\ComproCustomSubmittedForm.
  */
-
-namespace Drupal\compro_custom\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -53,8 +53,12 @@ class ComproCustomSubmittedForm extends ConfigFormBase {
 
     // Show tokens available for a node.
     if (\Drupal::moduleHandler()->moduleExists('token')) {
-      $form['tokens'] =
-        \Drupal::service('token.tree_builder')->buildRenderable(array('entity', 'node'));
+      $form['tokens']
+        = \Drupal::service('token.tree_builder')->buildRenderable(
+        array(
+          'entity',
+          'node',
+        ));
     }
 
     foreach ($content_types as $type => $info) {

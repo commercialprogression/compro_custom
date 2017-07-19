@@ -1,11 +1,12 @@
 <?php
 
+namespace Drupal\compro_custom\Plugin\Field\FieldFormatter;
+
 /**
  * @file
- * Contains \Drupal\compro_custom\Plugin\Field\FieldFormatter\ComproCustomFileLink.
+ * Contains
+ *   \Drupal\compro_custom\Plugin\Field\FieldFormatter\ComproCustomFileLink.
  */
-
-namespace Drupal\compro_custom\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
@@ -77,7 +78,8 @@ class ComproCustomFileLink extends FormatterBase {
     // Loop through items.
     foreach ($items as $delta => $file) {
       $file = $file->entity;
-      $url = Url::fromUri($file->url(),
+      $url = Url::fromUri(
+        $file->url(),
         array(
           'attributes' => array(
             'class' => array(
@@ -86,8 +88,10 @@ class ComproCustomFileLink extends FormatterBase {
           ),
         )
       );
-      $file_link = Link::fromTextAndUrl(('compro_custom_link_title') !== NULL ?
-        $this->getSetting('compro_custom_link_title') : $file->getFileName(), $url);
+      $file_link = Link::fromTextAndUrl(
+        ('compro_custom_link_title') !== NULL ?
+          $this->getSetting('compro_custom_link_title') : $file->getFileName(), $url
+      );
       $elements[$delta] = $file_link->toRenderable();
     }
 

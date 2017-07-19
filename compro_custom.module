@@ -54,7 +54,7 @@ function compro_custom_preprocess_block(&$variables) {
     // Link path.
     $compro_custom = \Drupal::config('compro_custom.form');
 
-    $variables['title_h1'] = $compro_custom->get('logo.heading') !== NULL ? FALSE : TRUE;
+    $variables['title_h1'] = $compro_custom->get('logo.heading') !== 1 ? FALSE : TRUE;
     // There doesn't seem to be a function that sanity-checks a route name, so
     // we fudge it here.
     $variables['logo_path'] = $compro_custom->get('logo.url') !== NULL ? $compro_custom->get('logo.url') : '<front>';
@@ -62,7 +62,8 @@ function compro_custom_preprocess_block(&$variables) {
       $variables['logo_path'] = $compro_custom->get('logo.url');
     }
     else {
-      $variables['logo_path'] = Url::fromRoute($compro_custom->get('logo.url'))->toString();
+      $variables['logo_path'] = Url::fromRoute($compro_custom->get('logo.url'))
+        ->toString();
     }
     $variables['logo_title'] = Html::escape($compro_custom->get('logo.title') !== NULL ? $compro_custom->get('logo.title') : $site_name . ' home');
   }
