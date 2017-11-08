@@ -14,6 +14,20 @@ use Drupal\Component\Utility\Xss;
 use Drupal\node\Entity\NodeType;
 
 /**
+ * Helper function to get options (all or available).
+ */
+function _compro_custom_get_options() {
+  return array(
+    'h1' => t('Heading 1'),
+    'h2' => t('Heading 2'),
+    'h3' => t('Heading 3'),
+    'h4' => t('Heading 4'),
+    'h5' => t('Heading 5'),
+    'h6' => t('Heading 6'),
+  );
+}
+
+/**
  * Implements hook_page_attachments().
  */
 function compro_custom_page_attachments(array &$attachments) {
@@ -106,63 +120,4 @@ function compro_custom_add_view_modes() {
  */
 function compro_custom_entity_insert(EntityInterface $entity) {
   compro_custom_add_view_modes();
-}
-
-/**
- * Implements hook_entity_extra_field_info().
- */
-function compro_custom_entity_extra_field_info() {
-  $extra = array();
-
-  // Go through all the entity types and add extra fields for display.
-  foreach (NodeType::loadMultiple() as $bundle) {
-    $extra['node'][$bundle->Id()] = array(
-      'display' => array(
-        'compro_submitted' => array(
-          'label' => t('Submitted'),
-          'description' => t('Author attribution for the content.'),
-          'weight' => 0,
-        ),
-        'compro_links' => array(
-          'label' => t('Links'),
-          'description' => t('Node links, like "Read more".'),
-          'weight' => 0,
-        ),
-      ),
-      'form' => array(
-        'compro_submitted' => array(
-          'label' => t('Submitted'),
-          'description' => t('Author attribution for the content.'),
-          'edit' => Link::fromTextAndUrl('Edit', Url::fromRoute('compro_custom.compro_custom_submitted'))
-            ->toString(),
-          'weight' => 0,
-        ),
-      ),
-    );
-  }
-
-  return $extra;
-}
-
-/**
- * Implements hook_ENTITY_TYPE_view().
- */
-function compro_custom_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
-  if ($display->getComponent('compro_submitted')) {
-    $sub = \Drupal::config('compro_custom.compro_submitted');
-    $sub_line = 'Submitted by [node:author:name] on [node:created]';
-    if ($sub->get($entity->bundle())) {
-      $sub_line = $sub->get($entity->bundle());
-    }
-    $build['compro_submitted'] = [
-      '#prefix' => '<div class="submitted">',
-      '#markup' => \Drupal::token()
-        ->replace($sub_line, array('node' => $entity)),
-      '#suffix' => '</div>',
-    ];
-  }
-
-  if ($display->getComponent('compro_links')) {
-    $build['compro_links'] = $build['links'];
-  }
 }
